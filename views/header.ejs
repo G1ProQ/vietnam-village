@@ -1,0 +1,21 @@
+<div class="upper-header">
+  <a href="/"> <div class="logo-img"></div></a>
+  <div class="search-box">
+    <input type="text" placeholder="Search..." />
+    <div class="search"></div>
+  </div>
+</div>
+
+<script>
+  window.onkeyup = pressed;
+  var search_input;
+  function pressed(e) {
+    search_input = document.querySelector(".search-box input").value;
+    search_input = search_input.trim().toLowerCase();
+    if (e.keyCode == 13) {
+      if (search_input == "lang phu khe") {
+        console.log(search_input);
+      }
+    }
+  }
+</script>
