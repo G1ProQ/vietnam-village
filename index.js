@@ -2,9 +2,15 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const path = require("path");
-const LangNghe = require("./models/langNghe");
+// const LangNghe = require("./models/langNghe");
+// const compression = require("compression");
+// const helmet = require("helmet");
 // const ErrorHandle = require("./ErrorHandle");
 
+//bao ve khoi mot vai nguy hiem co ban
+// app.use(helmet());
+//nen file cho load nhanh hon
+// app.use(compression());
 //rút gọn đường dẫn đến thư mục
 app.set("views", path.join(__dirname, "views"));
 //lựa chọn cách kết xuất file (quên rồi, để search lại)
@@ -15,16 +21,37 @@ app.use(express.urlencoded({ extended: true }));
 // app.use('/public', express.static('public'));
 app.use(express.static(__dirname + "/public"));
 
-//kết nối database
-mongoose
-  .connect("mongodb://localhost:27017/langNghe")
-  .then(() => {
-    console.log("mongo connected");
-  })
-  .catch((err) => {
-    console.log("OH nooo, error");
-    console.log(err);
-  });
+var uri =
+  "mongodb+srv://quang:As12345678!@cluster0.ls4d36u.mongodb.net/langNghe?retryWrites=true&w=majority";
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+var db = mongoose.connection;
+db.on("error", console.log.bind(console, "Mongodb connection error: "));
+
+// mongoose
+//   .connect("mongodb://localhost:27017/langNghe")
+//   .then(() => {
+//     console.log("mongo connected");
+//   })
+//   .catch((err) => {
+//     console.log("OH nooo, error");
+//     console.log(err);
+//   });
+
+const langNgheSchema = new mongoose.Schema(
+  {
+    _id: { type: mongoose.Schema.Types.ObjectId },
+    name: { type: String, required: true },
+    address: { type: String, required: true },
+    history: String,
+    product: String,
+    introduction: String,
+    link1: String,
+    link2: String,
+    link3: String,
+  },
+  { collection: "langnghes" }
+);
+const LangNghe = mongoose.model("LangNghe", langNgheSchema);
 
 // hàm xử lý async
 function catchAsync(fn) {
@@ -37,9 +64,19 @@ function catchAsync(fn) {
 app.get(
   "/",
   catchAsync(async (req, res, next) => {
-    const langNghes = await LangNghe.find({});
-    res.render("home", {langNghes} );
+    const langNghes = await LangNghe.find().exec();
+    console.log(langNghes);
+    res.render("home", { langNghes: langNghes });
+    // })
+    // (req, res) => {
+    //   LangNghe.find({}).then((langNghes) => {
+    //     res.render("home", { langNghes });
+    //   })
+    //   .catch ((e)=> {
+    //     console.log(e);
+    //     res.send("error")
   })
+  // }
 );
 //new page
 app.get("/new", (req, res) => {
@@ -49,12 +86,13 @@ app.get("/new", (req, res) => {
 app.get(
   "/show/:id",
   catchAsync(async (req, res, next) => {
+    const langNghes = await LangNghe.find();
     const { id } = req.params;
     const langNghe = await LangNghe.findById(id);
     if (!langNghe) {
       throw new Error("khong tim thay lang nghe");
     }
-    res.render("show", { langNghe });
+    res.render("show", { langNghe: langNghe, langNghes: langNghes });
   })
 );
 

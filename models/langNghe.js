@@ -10,15 +10,16 @@ const mongoose = require("mongoose");
  * @property {String} product sản phẩm
  */
 langNgheSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    address: { type: String, required: true },
-    history: String,
-    product: String,
-    introduction: String,
-    link1: String,
-    link2: String,
-    link3: String,
+  _id: String,
+  name: { type: String, required: true },
+  address: { type: String, required: true },
+  history: String,
+  product: String,
+  introduction: String,
+  link1: String,
+  link2: String,
+  link3: String,
 });
 const LangNghe = mongoose.model("LangNghe", langNgheSchema);
 
-module.exports = LangNghe;
+// module.exports = LangNghe;
